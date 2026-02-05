@@ -1,0 +1,58 @@
+# Databricks Apps Configuration - Enterprise Analytics Dashboard
+# Uses on-behalf-of-user authorization for data access
+# Reference: https://docs.databricks.com/en/dev-tools/databricks-apps/auth#user-authorization
+
+command:
+  - "gunicorn"
+  - "app:app"
+  - "--worker-class"
+  - "uvicorn.workers.UvicornWorker"
+  - "--bind"
+  - "0.0.0.0:8000"
+  - "--workers"
+  - "2"
+  - "--timeout"
+  - "120"
+
+env:
+  # Databricks connection settings (REQUIRED)
+  - name: DATABRICKS_SERVER_HOSTNAME
+    value: "fe-vm-mv-serverless-tixx4d.cloud.databricks.com"
+  
+  - name: DATABRICKS_HTTP_PATH
+    value: "/sql/1.0/warehouses/fc63b669d98bde08"
+  
+  # Logging configuration
+  - name: LOG_LEVEL
+    value: "INFO"  # Options: DEBUG, INFO, WARNING, ERROR
+  
+  - name: ENVIRONMENT
+    value: "production"  # Options: development, production
+  
+  # Optional: Genie Space ID (if using Databricks Genie integration)
+  # Uncomment and set if you want to enable the Genie chatbot feature
+  # - name: GENIE_SPACE_ID
+  #   value: "your-genie-space-id"
+  
+  # Optional: AI Model Endpoint (if using AI dashboard/report generation)
+  # Uncomment and set if you want to enable AI features
+  # Default: "databricks-dbrx-instruct" (uses Foundation Models)
+  # - name: AI_MODEL_ENDPOINT
+  #   value: "databricks-dbrx-instruct"
+
+# User authorization scopes
+# These define what the app can do on behalf of users
+# See: https://docs.databricks.com/en/dev-tools/databricks-apps/auth#add-scopes-to-an-app
+scopes:
+  # Required for querying SQL warehouses with user permissions
+  - sql
+  
+  # Required for accessing Unity Catalog data with user permissions
+  - unity-catalog
+  
+  # Optional: For Databricks Genie integration
+  # - dashboards.genie
+  
+  # Optional: For file/volume access
+  # - files.files
+

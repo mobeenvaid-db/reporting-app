@@ -1,0 +1,196 @@
+# ============================================================
+# Health Insurance Dashboard - Data Configuration
+# ============================================================
+# This file maps your organization's data to the dashboard.
+# Just update the values below to match YOUR data structure.
+# No code changes needed!
+# ============================================================
+
+# Database Connection
+# -----------------------------------------------------------
+connection:
+  catalog: "mv_catalog"
+  schema: "demo_health"
+  warehouse_id: "fc63b669d98bde08"
+
+# Data Sources (Views/Tables)
+# -----------------------------------------------------------
+# Map the dashboard's expected views to YOUR view/table names
+views:
+  membership_kpis:
+    source: "v_membership_kpis"
+    description: "Monthly membership KPIs and metrics"
+  
+  product_mix:
+    source: "v_product_mix"
+    description: "Member distribution by product line"
+  
+  age_distribution:
+    source: "v_age_distribution"
+    description: "Member age group distribution"
+  
+  region_summary:
+    source: "v_region_summary"
+    description: "Regional membership breakdown"
+  
+  age_gender_risk:
+    source: "v_age_gender_risk"
+    description: "Risk analysis by age and gender"
+  
+  chronic_conditions:
+    source: "v_chronic_conditions"
+    description: "Chronic condition prevalence"
+
+# Field Mappings
+# -----------------------------------------------------------
+# Map the dashboard's expected field names to YOUR column names
+# Format: dashboard_field: "your_column_name"
+
+field_mappings:
+  # Membership KPIs View
+  membership_kpis:
+    month_start: "month_start"
+    total_members: "total_members"
+    new_enrollments: "new_enrollments"
+    terminations: "terminations"
+    avg_risk_score: "avg_risk_score"
+    avg_tenure: "avg_tenure"
+  
+  # Product Mix View
+  product_mix:
+    product_line: "product_line"
+    members: "members"
+    avg_age: "avg_age"
+    avg_risk: "avg_risk"
+  
+  # Age Distribution View
+  age_distribution:
+    age_range: "age_range"
+    members: "members"
+    avg_risk: "avg_risk"
+    high_risk_pct: "high_risk_pct"
+  
+  # Region Summary View
+  region_summary:
+    region: "region"
+    members: "members"
+    avg_age: "avg_age"
+    avg_risk: "avg_risk"
+  
+  # Age Gender Risk View
+  age_gender_risk:
+    age_range: "age_range"
+    gender: "gender"
+    members: "members"
+    avg_risk: "avg_risk"
+    high_risk_pct: "high_risk_pct"
+  
+  # Chronic Conditions View
+  chronic_conditions:
+    condition_name: "condition_name"
+    prevalence: "prevalence"
+    members: "members"
+    avg_cost: "avg_cost"
+
+# Custom Queries (Optional)
+# -----------------------------------------------------------
+# For organizations with complex data structures, you can define
+# custom SQL queries. Use {catalog}, {schema}, and {field_name}
+# placeholders that will be automatically replaced.
+
+custom_queries:
+  enabled: false
+  
+  # Example: If your membership data comes from multiple tables
+  # membership_kpis: |
+  #   SELECT 
+  #     {month_start},
+  #     COUNT(DISTINCT member_id) as {total_members},
+  #     SUM(CASE WHEN enrollment_type = 'NEW' THEN 1 ELSE 0 END) as {new_enrollments}
+  #   FROM {catalog}.{schema}.fact_members
+  #   GROUP BY {month_start}
+
+# Data Validation Rules (Optional)
+# -----------------------------------------------------------
+validation:
+  # Fail if any required views are missing
+  require_all_views: false
+  
+  # Fields that must exist in each view
+  required_fields:
+    membership_kpis: ["month_start", "total_members"]
+    product_mix: ["product_line", "members"]
+    age_distribution: ["age_range", "members"]
+
+# Display Customization (Optional)
+# -----------------------------------------------------------
+display:
+  # Customize labels shown in the dashboard
+  labels:
+    product_line: "Product Line"
+    region: "Region"
+    condition_name: "Condition"
+  
+  # Date format for display
+  date_format: "YYYY-MM-DD"
+  
+  # Number formatting
+  number_format:
+    use_thousands_separator: true
+    decimal_places: 2
+
+# Dashboard Filters Configuration
+# -----------------------------------------------------------
+# Configure which filters appear in the dashboard header
+# Filters are applied CLIENT-SIDE (no re-querying)
+filters:
+  enabled: true
+  
+  # Product Line Filter
+  product_line:
+    enabled: true
+    label: "Product Line"
+    source: "dynamic"  # "dynamic" queries from data, "static" uses values below
+    query_view: "product_mix"  # Which view to query for options
+    query_field: "product_line"  # Which field to use for options
+    # static_values: ["HMO", "PPO", "EPO"]  # Only used if source: "static"
+    default: "all"  # Default selection
+  
+  # Region Filter  
+  region:
+    enabled: true
+    label: "Region"
+    source: "dynamic"
+    query_view: "region_summary"
+    query_field: "region"
+    # static_values: ["Northeast", "Southeast", "Midwest", "West"]
+    default: "all"
+  
+  # Date Range Filter
+  date_range:
+    enabled: true
+    label: "Time Period"
+    source: "static"
+    static_values:
+      - label: "Last 3 Months"
+        value: "3m"
+      - label: "Last 6 Months"
+        value: "6m"
+      - label: "Last 12 Months"
+        value: "12m"
+      - label: "Year to Date"
+        value: "ytd"
+      - label: "All Time"
+        value: "all"
+    default: "12m"
+  
+  # Custom Filter Example (Optional)
+  # Add your own filters here!
+  # employer_group:
+  #   enabled: true
+  #   label: "Employer Group"
+  #   source: "dynamic"
+  #   query_view: "employer_groups"  # Create this view if needed
+  #   query_field: "employer_name"
+  #   default: "all"
+
